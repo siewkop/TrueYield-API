@@ -1,3 +1,5 @@
+using TrueYield_API.Features.AssetsData;
+using TrueYield_API.Features.AssetsData.FinnHub;
 using TrueYield_API.Features.ExchangeRates;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +11,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddHttpClient<INbpApiClient, NbpApiClient>()
+    .AddStandardResilienceHandler();
+
+builder.Services.AddHttpClient<IAssetsDataProvider, FinnhubApiClient>()
     .AddStandardResilienceHandler();
 
 var app = builder.Build();
