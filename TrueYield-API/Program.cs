@@ -24,10 +24,8 @@ app.UseHttpsRedirection();
 
 app.MapGet("/test-nbp", async (INbpApiClient nbpClient) =>
 {
-    // Let's test a specific past date (e.g., a random Thursday)
     var testDate = new DateOnly(2026, 4, 5);
 
-    // Call your new service
     var rate = await nbpClient.GetCurrencyRate("USD",testDate);
 
     if (rate is not null)
