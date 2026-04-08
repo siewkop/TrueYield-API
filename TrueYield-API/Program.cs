@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using TrueYield_API.Database;
 using TrueYield_API.Features.AssetsData;
 using TrueYield_API.Features.AssetsData.FinnHub;
 using TrueYield_API.Features.ExchangeRates;
@@ -5,6 +7,9 @@ using TrueYield_API.Features.ExchangeRates;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

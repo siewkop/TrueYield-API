@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  trueyield-db:
+    image: postgres:16-alpine
+    container_name: trueyield-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: TrueYieldDb
+    ports:
+      - "5432:5432"
+    volumes:
+      - trueyield-pgdata:/var/lib/postgresql/data
+    networks:
+      - trueyield-network
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: trueyield-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - trueyield-db
+    networks:
+      - trueyield-network
+    restart: unless-stopped
+
+volumes:
+  trueyield-pgdata:
+
+networks:
+  trueyield-network:
+    driver: bridge
