@@ -3,10 +3,13 @@ using TrueYield_API.Database;
 using TrueYield_API.Features.AssetsData;
 using TrueYield_API.Features.AssetsData.FinnHub;
 using TrueYield_API.Features.ExchangeRates;
+using TrueYield_API.Features.Portfolio;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<IYieldCalculatorService, YieldCalculatorService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -21,7 +24,19 @@ builder.Services.AddHttpClient<INbpApiClient, NbpApiClient>()
 builder.Services.AddHttpClient<IAssetsDataProvider, FinnhubApiClient>()
     .AddStandardResilienceHandler();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173", "http://localhost:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
+
+app.UseCors("AllowFrontend");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -31,6 +46,16 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Portfolio Endpoints
+app.MapPost("/api/portfolio", AddPosition.Handle)
+   .WithName("AddPortfolioPosition");
+
+app.MapGet("/api/portfolio", GetPortfolioSnapshot.Handle)
+   .WithName("GetPortfolioSnapshot");
+
+app.MapGet("/api/assets/search", SearchAssets.Handle)
+   .WithName("SearchAssets");
 
 app.MapGet("/test-nbp", async (INbpApiClient nbpClient) =>
 {
