@@ -8,7 +8,7 @@ namespace TrueYield_API.Features.ExchangeRates
         private const string BaseUrl = "https://api.nbp.pl/api/exchangerates/rates/a";
         private const int MaxFallbackDays = 5;
 
-        public async Task<decimal?> GetCurrencyRate(string code, DateOnly date)
+        public async Task<decimal?> GetCurrencyRate(string code, DateOnly date, CancellationToken cancellationToken = default)
         {
             for (int i = 0; i <= MaxFallbackDays; i++)
             {
@@ -23,7 +23,7 @@ namespace TrueYield_API.Features.ExchangeRates
                         logger.LogInformation("Attempting fallback NBP rate for {Code} on {Date} (original date: {OriginalDate})", code, targetDate, date);
                     }
 
-                    var response = await httpClient.GetFromJsonAsync<NbpResponseDto>(url);
+                    var response = await httpClient.GetFromJsonAsync<NbpResponseDto>(url, cancellationToken);
                     
                     if (response?.Rates != null && response.Rates.Count > 0)
                     {
