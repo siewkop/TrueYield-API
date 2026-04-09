@@ -39,6 +39,10 @@ public class FinnhubApiClient(HttpClient httpClient, IConfiguration configuratio
                     x => new AssetModel(x.Symbol, x.Currency, x.Description, x.Type)
                 );
         }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+        {
+            throw new InvalidOperationException("Invalid Finnhub API Key. Please update your configuration.");
+        }
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to fetch Finnhub assets");
@@ -67,6 +71,10 @@ public class FinnhubApiClient(HttpClient httpClient, IConfiguration configuratio
                 {
                     results.Add(new AssetPrice(symbol, result.CurrentPrice, null));
                 }
+            }
+            catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                throw new InvalidOperationException("Invalid Finnhub API Key. Please update your configuration.");
             }
             catch (Exception ex)
             {
