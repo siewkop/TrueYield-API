@@ -20,8 +20,7 @@ Before you begin, ensure you have the following installed on your machine:
 ### Step 0: Clone the Repository
 If you haven't already, download the code to your local machine using Git:
 ```bash
-git clone <YOUR_REPOSITORY_URL_HERE>
-cd TrueYield-API
+git clone https://github.com/siewkop/TrueYield-API.git
 ```
 
 ### Step 1: Obtain a Free Finnhub API Key
